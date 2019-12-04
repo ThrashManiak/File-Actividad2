@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+   <title>Actividad2-File</title>
+
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    
+    function onBodyLoad() {
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+    
+    function onDeviceReady() {
+	    
+        document.getElementById("createFile").addEventListener("click", createFile);
+document.getElementById("writeFile").addEventListener("click", writeFile);
+document.getElementById("readFile").addEventListener("click", readFile);
+    }
+   function createFile() {
+   var type = window.TEMPORARY;
+   var size = 5*1024*1024;
+  window.requestFileSystem(type, size, successCallback, errorCallback)
+   function successCallback(fs) {
+      fs.root.getFile('archivo-prueba.txt', {create: true, exclusive: true}, function(fileEntry) {
+         alert('¡Archivo creado! ')
+      }, errorCallback);
+   }
+   function errorCallback(error) {
+      alert("ERROR: " + error.code)
+   }
+	
+}
+      function writeFile() {
+   var type = window.TEMPORARY;
+   var size = 5*1024*1024;
+   window.requestFileSystem(type, size, successCallback, errorCallback)
+   function successCallback(fs) {
+      fs.root.getFile('archivo-prueba.txt', {create: true}, function(fileEntry) {
+         fileEntry.createWriter(function(fileWriter) {
+            fileWriter.onwriteend = function(e) {
+		    alert('¡has escrito en el archivo!')
+               };
+            fileWriter.onerror = function(e) {
+               alert('Error en la escritura ' + e.toString());
+            };
+            var blob = new Blob(['Files'], {type: 'text/plain'});
+            fileWriter.write(blob);
+         }, errorCallback);
+      }, errorCallback);
+   }
+   function errorCallback(error) {
+      alert("ERROR: " + error.code)
+   }
+}
+      function readFile() {
+   var type = window.TEMPORARY;
+   var size = 5*1024*1024;
+   window.requestFileSystem(type, size, successCallback, errorCallback)
+   function successCallback(fs) {
+      fs.root.getFile('archivo-vm.txt', {}, function(fileEntry) {
+         fileEntry.file(function(file) {
+            var reader = new FileReader();
+            reader.onloadend = function(e) {
+               var txtArea = document.getElementById('textarea');
+               txtArea.value = this.result;
+            };
+            reader.readAsText(file);
+         }, errorCallback);
+      }, errorCallback);
+   }
+   function errorCallback(error) {
+      alert("ERROR: " + error.code)
+   }
+}          
+    </script>
+  </head>
+  <body onload="onBodyLoad()">
+    <center><h1>Actividad2-File</h1></center>
+    <center><button id = "createFile">Crear</button>
+<button id = "writeFile">Write</button>
+<button id = "readFile">Read</button>
+        <div></div>
+<div>
+<textarea id = "textarea"></textarea>
+    </div></center>
+  </body>
+</html>
